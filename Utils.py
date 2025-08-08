@@ -67,7 +67,7 @@ def generate_random_particles(N, L, r):
         res.append(p)
     return res
 
-part = generate_random_particles(3, 10, 2)
+"""part = generate_random_particles(3, 10, 2)
 for p in part:
     print(p)
 
@@ -83,4 +83,4 @@ for i in range(3):
     print('-----------')
     print('BRUTE FORCE')
     for p in withbruteforce[i]:
-        print(p)
+        print(p)"""
