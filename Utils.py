@@ -19,7 +19,8 @@ def cell_index_method(particulas: list[Particula], N, L, M, r_c):
         i = int(particula.y // l)
         j = int(particula.x // l)
         cell[i][j].append(particula)
-    res = [[-1 for _ in range(N)] for _ in range(N)]
+    res = [[] for _ in range(N)]
+    dist = [[-1 for _ in range(N)] for _ in range(N)]
     for k in range(0, N):
         particula = particulas[k]
         i_p = int(particula.y // l)
@@ -31,11 +32,20 @@ def cell_index_method(particulas: list[Particula], N, L, M, r_c):
             if i < 0 or j < 0 or i >= M or j >= M:
                 continue
             for p in cell[i][j]:
-                dist = particula.dist(p)
-                if dist <= r_c:
-                    res[particula.ind][p.ind] = dist
-                    res[p.ind][particula.ind] = dist
-    # @TODO: agarrar la matriz y devolver la lista con las particulas en ese radio de interaccion
+                d = particula.dist(p)
+                if p != particula and dist[particula.ind][p.ind] < 0 and d <= r_c:
+                    dist[particula.ind][p.ind] = d
+                    dist[p.ind][particula.ind] = d
+                    res[particula.ind].append(particulas[p.ind])
+                    res[p.ind].append(particulas[particula.ind])
+    return res
+
+def brute_force(particulas: list[Particula], N, r_c):
+    res = [[] for _ in range(N)]
+    for i in range(N):
+        for j in range(N):
+            if i != j and particulas[i].dist(particulas[j]) <= r_c:
+                res[i].append(particulas[j])
     return res
 
 def exists_particle(particle, particles):
@@ -61,5 +71,16 @@ part = generate_random_particles(3, 10, 2)
 for p in part:
     print(p)
 
-dists = cell_index_method(part, 3, 40, 4, 2)
-print(dists)
+withalgorithm = cell_index_method(part, 3, 40, 4, 2)
+withbruteforce = brute_force(part, 3, 2)
+
+for i in range(3):
+    print(f'PARTICULA {i}')
+    print('-----------')
+    print('CELL INDEX METHOD')
+    for p in withalgorithm[i]:
+        print(p)
+    print('-----------')
+    print('BRUTE FORCE')
+    for p in withbruteforce[i]:
+        print(p)
