@@ -1,5 +1,7 @@
 from Particula import Particula
 import random
+import os
+from datetime import datetime
 
 def get_indexes_to_check(i, j):
     res = []
@@ -66,3 +68,19 @@ def generate_random_particles(N, L, r):
             p = Particula(x, y, r)
         res.append(p)
     return res
+
+def generate_simulation_files(particles: list[Particula], N, L, colors):
+    os.makedirs("data", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
+
+    static_file = os.path.join("data", f"{timestamp}.txt")
+    with open(static_file, "w") as f:
+        f.write(f"{N}\n")
+        f.write(f"{L}\n")
+        for i in range(0, N):
+            f.write(f"{particles[i].r} {colors[i]}\n")
+
+    dynamic_file = os.path.join("data", f"{timestamp}-0.txt")
+    with open(dynamic_file, "w") as f:
+        for i in range(0, N):
+            f.write(f"{particles[i].x} {particles[i].y} 0 0\n")

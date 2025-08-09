@@ -23,15 +23,10 @@ y = [p.y for p in part]
 colors = ["red" for _ in part]
 rand = random.randint(0, N-1)
 colors[rand] = "green"
+output = [rand]
 for p in algorithm[rand]:
     colors[p.ind] = "blue"
+    output.append(p.ind)
+Utils.generate_simulation_files(part, N, L, colors)
 
-plt.scatter(x, y, c=colors, s=50)
-
-plt.title("Gráfico de puntos")
-plt.xlabel("Eje X")
-plt.ylabel("Eje Y")
-plt.legend()
-plt.grid(True)
-
-plt.show()
+print(output)
