@@ -57,30 +57,12 @@ def exists_particle(particle, particles):
 def generate_random_particles(N, L, r):
     res = []
     for _ in range(0, N):
-        x = random.randint(r, L - r)
-        y = random.randint(r, L - r)
+        x = random.uniform(r, L - r)
+        y = random.uniform(r, L - r)
         p = Particula(x, y, r)
         while(exists_particle(p, res)):
-            x = random.randint(r, L - r)
-            y = random.randint(r, L - r)
+            x = random.uniform(r, L - r)
+            y = random.uniform(r, L - r)
             p = Particula(x, y, r)
         res.append(p)
     return res
-
-"""part = generate_random_particles(3, 10, 2)
-for p in part:
-    print(p)
-
-withalgorithm = cell_index_method(part, 3, 40, 4, 2)
-withbruteforce = brute_force(part, 3, 2)
-
-for i in range(3):
-    print(f'PARTICULA {i}')
-    print('-----------')
-    print('CELL INDEX METHOD')
-    for p in withalgorithm[i]:
-        print(p)
-    print('-----------')
-    print('BRUTE FORCE')
-    for p in withbruteforce[i]:
-        print(p)"""
