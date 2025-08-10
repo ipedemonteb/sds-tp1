@@ -8,12 +8,13 @@ L = float(input("Ingrese L, la longitud de la grilla: "))
 r_c = float(input("Ingrese r_c, el radio de interacción: "))
 r = float(input("Ingrese r, el radio de las partículas: "))
 M = int(input(f'Ingrese M, donde MxM es la cantidad de celdas de la grilla (menor o igual a {int(L / (r_c + 2*r))}): '))
+periodic = int(input('Ingrese si desea ejecutar con condiciones periodicas de contorno (1 = SI, 0 = NO): '))
 
 part = Utils.generate_random_particles(N, L, r)
 print('Particulas generadas. Ejecutando Cell Index Method...')
 
 inicio = time.time()
-algorithm = Utils.cell_index_method(part, N, L, M, r_c)
+algorithm = Utils.cell_index_method(part, N, L, M, r_c, periodic)
 fin = time.time()
 
 print(f'Cell Index Method se ejecutó en {fin - inicio:.4f} segundos')
@@ -22,11 +23,8 @@ x = [p.x for p in part]
 y = [p.y for p in part]
 colors = ["red" for _ in part]
 rand = random.randint(0, N-1)
+print(f"La particula seleccionada como foco es la de id {rand}")
 colors[rand] = "green"
-output = [rand]
 for p in algorithm[rand]:
     colors[p.ind] = "blue"
-    output.append(p.ind)
-Utils.generate_simulation_files(part, N, L, colors)
-
-print(output)
+Utils.generate_simulation_files(part, N, L, colors, algorithm)

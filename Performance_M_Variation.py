@@ -9,6 +9,7 @@ L = 20
 r_c = 1
 r = 0.25
 M_max = int(L / (r_c + 2*r))
+periodic = int(input('Ingrese si desea ejecutar con condiciones periodicas de contorno (1 = SI, 0 = NO): '))
 print(f'N = {N}, L = {L}, r_c = {r_c}, r = {r} => M <= {M_max}')
 part = Utils.generate_random_particles(N, L, r)
 print('Particulas generadas. Probando distintos valores de M.')
@@ -22,7 +23,7 @@ for M in m_values:
     print('-------')
     print('Midiendo el tiempo con Cell Index Method')
     inicio = time.time()
-    Utils.cell_index_method(part, N, L, M, r_c)
+    Utils.cell_index_method(part, N, L, M, r_c, periodic)
     fin = time.time()
     cell_index_method_graph.append(fin - inicio)
     print(f'Cell Index Method se ejecutó en {fin - inicio:.4f} segundos')

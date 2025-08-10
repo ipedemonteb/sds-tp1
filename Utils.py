@@ -12,7 +12,7 @@ def get_indexes_to_check(i, j):
     res.append([i+1, j])
     return res
 
-def cell_index_method(particulas: list[Particula], N, L, M, r_c):
+def cell_index_method(particulas: list[Particula], N, L, M, r_c, periodic):
     cell = [[[] for _ in range(M)] for _ in range(M)]
     l = L / M
     for k in range(0, N):
@@ -32,9 +32,15 @@ def cell_index_method(particulas: list[Particula], N, L, M, r_c):
             i = index[0]
             j = index[1]
             if i < 0 or j < 0 or i >= M or j >= M:
-                continue
+                if periodic:
+                    i = M - 1 if i < 0 else i
+                    i = 0 if i >= M else i
+                    j = M - 1 if j < 0 else j
+                    j = 0 if j >= M else j
+                else:
+                    continue
             for p in cell[i][j]:
-                d = particula.dist(p)
+                d = particula.dist(p) if not periodic else particula.dist_with_periodic_condition(p, L)
                 if p != particula and dist[particula.ind][p.ind] < 0 and d <= r_c:
                     dist[particula.ind][p.ind] = d
                     dist[p.ind][particula.ind] = d
@@ -42,11 +48,12 @@ def cell_index_method(particulas: list[Particula], N, L, M, r_c):
                     res[p.ind].append(particulas[particula.ind])
     return res
 
-def brute_force(particulas: list[Particula], N, r_c):
+def brute_force(particulas: list[Particula], N, L, r_c, periodic):
     res = [[] for _ in range(N)]
     for i in range(N):
         for j in range(N):
-            if i != j and particulas[i].dist(particulas[j]) <= r_c:
+            d = particulas[i].dist(particulas[j]) if not periodic else particulas[i].dist_with_periodic_condition(particulas[j], L)
+            if i != j and d <= r_c:
                 res[i].append(particulas[j])
     return res
 
@@ -61,15 +68,19 @@ def generate_random_particles(N, L, r):
     for _ in range(0, N):
         x = random.uniform(r, L - r)
         y = random.uniform(r, L - r)
-        p = Particula(x, y, r)
+        v_x = random.uniform(-20, 20)
+        v_y = random.uniform(-20, 20)
+        p = Particula(x, y, r, v_x, v_y)
         while(exists_particle(p, res)):
             x = random.uniform(r, L - r)
             y = random.uniform(r, L - r)
-            p = Particula(x, y, r)
+            v_x = random.uniform(-20, 20)
+            v_y = random.uniform(-20, 20)
+            p = Particula(x, y, r, v_x, v_y)
         res.append(p)
     return res
 
-def generate_simulation_files(particles: list[Particula], N, L, colors):
+def generate_simulation_files(particles: list[Particula], N, L, colors, cell_index_method_results):
     os.makedirs("data", exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
 
@@ -83,4 +94,13 @@ def generate_simulation_files(particles: list[Particula], N, L, colors):
     dynamic_file = os.path.join("data", f"{timestamp}-0.txt")
     with open(dynamic_file, "w") as f:
         for i in range(0, N):
-            f.write(f"{particles[i].x} {particles[i].y} 0 0\n")
+            f.write(f"{particles[i].x} {particles[i].y} {particles[i].v_x} {particles[i].v_y}\n")
+    
+    output_file = os.path.join("data", f"{timestamp}-output.txt")
+    with open(output_file, "w") as f:
+        for i in range(0, N):
+            f.write(f"[{i}")
+            for p in cell_index_method_results[i]:
+                f.write(f" {p.ind}")
+            f.write("]\n")
+
